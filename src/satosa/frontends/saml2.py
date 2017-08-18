@@ -300,11 +300,19 @@ class SAMLFrontend(FrontendModule, SAMLBaseModule):
             for k in attributes_to_remove:
                 ava.pop(k, None)
 
-        name_id = NameID(text=internal_response.user_id,
-                         format=hash_type_to_saml_name_id_format(
-                             internal_response.user_id_hash_type),
-                         sp_name_qualifier=None,
-                         name_qualifier=None)
+        nameid_format = hash_type_to_saml_name_id_format(
+            internal_response.user_id_hash_type)
+        if nameid_format == NAMEID_FORMAT_PERSISTENT:
+            mail = internal_response.attributes.get('mail', None)[0]
+            name_id = NameID(text=mail,
+                             format=nameid_format,
+                             sp_name_qualifier=None,
+                             name_qualifier=None)
+        else:
+            name_id = NameID(text=internal_response.user_id,
+                             format=nameid_format,
+                             sp_name_qualifier=None,
+                             name_qualifier=None)
 
         dbgmsg = "returning attributes %s" % json.dumps(ava)
         satosa_logging(logger, logging.DEBUG, dbgmsg, context.state)
