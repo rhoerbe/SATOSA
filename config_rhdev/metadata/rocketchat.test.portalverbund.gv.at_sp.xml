@@ -1,0 +1,73 @@
+<EntityDescriptor 
+    entityID="https://rocketchat.test.portalverbund.gv.at/sp"
+    xmlns="urn:oasis:names:tc:SAML:2.0:metadata" 
+    xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" 
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#" 
+    xmlns:alg="urn:oasis:names:tc:SAML:metadata:algsupport"          
+    xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" 
+    xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+  <md:Extensions>
+    <mdattr:EntityAttributes>
+      <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" 
+        Name="http://macedir.org/entity-category" 
+        NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue>http://www.ref.gv.at/ns/names/agiz/pvp/egovtoken</saml:AttributeValue>
+     </saml:Attribute>
+    </mdattr:EntityAttributes>
+  </md:Extensions>
+<SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:Extensions>
+      <alg:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+      <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+      <mdui:UIInfo>
+        <mdui:DisplayName xml:lang="en">osAlliance Rocketchat SAML Test</mdui:DisplayName>
+        <mdui:Description xml:lang="en"> 
+            Testeinbindung Rocket.Chat/PVP2-SAML im Auftrag des BKA
+        </mdui:Description>
+        <mdui:Logo xml:lang="en" height="70" width="79">http://md.test.portalverbund.gv.at/pvpLogo.png</mdui:Logo>
+      </mdui:UIInfo>
+      <init:RequestInitiator Binding="urn:oasis:names:tc:SAML:profiles:SSO:request-init" Location="https://echo.test.portalverbund.gv.at/Shibboleth.sso/Login" xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init"/>
+      <idpdisc:DiscoveryResponse Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="https://echo.test.portalverbund.gv.at/Shibboleth.sso/Login" index="1" xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"/>
+    </md:Extensions>
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>
+MIIDSDCCAjACCQDRGKcLAEFk9TANBgkqhkiG9w0BAQsFADBmMQswCQYDVQQGEwJB
+VDENMAsGA1UECBMEV2llbjENMAsGA1UEBxMEV2llbjESMBAGA1UEChMJVGVzdGZp
+cm1hMQswCQYDVQQLEwJJVDEYMBYGA1UEAxMPdGVzdC51Y29tLmd2LmF0MB4XDTE3
+MDYwODA5MDc0MVoXDTI3MDYwNjA5MDc0MVowZjELMAkGA1UEBhMCQVQxDTALBgNV
+BAgTBFdpZW4xDTALBgNVBAcTBFdpZW4xEjAQBgNVBAoTCVRlc3RmaXJtYTELMAkG
+A1UECxMCSVQxGDAWBgNVBAMTD3Rlc3QudWNvbS5ndi5hdDCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAL1ICMCbkBfWAkhyn+6wlDch9Qr3Gv6oOV7ihEg9
+CuhszEz+qMsAiPfQD9MFnL0ysQ4+dZs/msDYKKxs0ow2WItHTDpKZdjXgx7jD0IL
+WEwd7+SpkP7hfqYUgTEV+dErh0i/uuUas+J0wsbgAQP+XpRdW4NT5GW1QqDfEGj2
+3lf8633slR73jEScMpxV9n+Zg719nMnwtYSCg4v/GvjZSsTJZawUIA0mBux63AtG
+FUaVcM3lPRvnF32deiQdvordtNf+wnD0p51J1/qnoCv+XarbRPHNhF9unZ9QjWo9
+Vul6XderCQ+kCn7A9wXbcrL+VsvXMzA69Tit2+QLq7IexZcCAwEAATANBgkqhkiG
+9w0BAQsFAAOCAQEALpO2Kan4RUFFatYHmFtlmSScxShFLswmsdwz8fCbNHVu0IJ/
+mDnEiX2dMhmZqlxdCe45MxsKHtkytuxYMcvI5YgOQsselYoodk4D3iAg557LXEuC
+U7B+KglI45P2N2oJM8TEiS5JVHFR9ny52dbKQIdcmlRKRoaddNjRxtnQTvv101NK
+nTpF+2c+81fmkLqRzZQYNwvzodvOuZ6puioqGnIPakzRRN8Fkbwx0ftkaYORI/bn
+F598U/Qa7rMBYo8opB8pmRzB6mD4eN4iPjvXz/364VcoAz/xvUb/+j88pYQ1Yxyi
+xpdBtvX8yfF3E4EY6qtuJCnOZNNLM93+f1lyFg==
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+	<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://rocketchat.test.portalverbund.gv.at/_saml/logout/sp/" ResponseLocation="https://rocketchat.test.portalverbund.gv.at/_saml/logout/sp/"/>
+	<NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>
+	<AssertionConsumerService index="1" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://rocketchat.test.portalverbund.gv.at/_saml/validate/sp"/>
+</SPSSODescriptor>
+   <md:Organization>
+       <md:OrganizationName xml:lang="de">AG-IZ (egov.at/BLSG/AG Integration und Zugänge)</md:OrganizationName>
+       <md:OrganizationDisplayName xml:lang="de">AG-IZ</md:OrganizationDisplayName>
+       <md:OrganizationURL xml:lang="de">http://www.portalverbund.gv.at</md:OrganizationURL>
+   </md:Organization>
+   <md:ContactPerson contactType="technical">
+       <md:GivenName>Rainer</md:GivenName>
+       <md:SurName>Hoerbe</md:SurName>
+       <md:EmailAddress>rh_testfed_pv_at@mail.hoerbe.at</md:EmailAddress>
+   </md:ContactPerson>  
+</EntityDescriptor>
+
