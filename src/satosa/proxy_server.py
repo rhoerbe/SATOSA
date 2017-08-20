@@ -11,6 +11,7 @@ from .base import SATOSABase
 from .context import Context
 from .response import ServiceError, NotFound
 from .routing import SATOSANoBoundEndpointError
+from saml2.s_utils import UnknownSystemEntity
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +97,6 @@ class WsgiApplication(SATOSABase):
 
         context = Context()
         context.path = path
-        logger.debug('HTTP Request: ' + path)
 
         # copy wsgi.input stream to allow it to be re-read later by satosa plugins
         # see: http://stackoverflow.com/questions/1783383/how-do-i-copy-wsgi-input-if-i-want-to-process-post-data-more-than-once
@@ -118,7 +118,6 @@ class WsgiApplication(SATOSABase):
             resp = NotFound("Couldn't find the page you asked for!")
             return resp(environ, start_response)
         except Exception as err:
-            from saml2.s_utils import UnknownSystemEntity
             if type(err) != UnknownSystemEntity:
                 logger.exception("%s" % err)
             if debug:
