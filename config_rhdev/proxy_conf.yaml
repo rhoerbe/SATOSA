@@ -1,0 +1,43 @@
+#--- SATOSA Config ---#
+BASE: https://proxy1.test.portalverbund.gv.at
+INTERNAL_ATTRIBUTES: "internal_attributes.yaml"
+COOKIE_STATE_NAME: "SATOSA_STATE"
+STATE_ENCRYPTION_KEY: "asdASD123"
+CUSTOM_PLUGIN_MODULE_PATHS:
+  - "plugins/backends"
+  - "plugins/frontends"
+  - "plugins/micro_services"
+BACKEND_MODULES:
+  - "plugins/backends/saml2_backend.yaml"
+FRONTEND_MODULES:
+  - "plugins/frontends/saml2_frontend.yaml"
+MICRO_SERVICES:
+  - "plugins/microservices/static_attributes.yaml"
+USER_ID_HASH_SALT: "61a89d2db0b9e1e27d490d050b478fe71f352fddd3528a44157f43e339c6c62f2362fb413179937d96172bf84233317"
+LOGGING:
+  version: 1
+  formatters:
+    simple:
+      format: "[%(asctime)-19.19s] [%(levelname)-5.5s]: %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      formatter: simple
+      stream: ext://sys.stdout
+    info_file_handler:
+      class: logging.handlers.RotatingFileHandler
+      level: INFO
+      formatter: simple
+      filename: info.log
+      maxBytes: 10485760 # 10MB
+      backupCount: 20
+      encoding: utf8
+  loggers:
+    satosa:
+      level: DEBUG
+      handlers: [console]
+      propagate: no
+  root:
+    level: INFO
+    handlers: [info_file_handler]

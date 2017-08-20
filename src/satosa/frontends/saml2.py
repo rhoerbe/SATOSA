@@ -11,7 +11,8 @@ from saml2 import SAMLError, xmldsig
 from saml2.config import IdPConfig
 from saml2.extension.ui import NAMESPACE as UI_NAMESPACE
 from saml2.metadata import create_metadata_string
-from saml2.saml import NameID, NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_PERSISTENT
+from saml2.saml import NameID, NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_PERSISTENT, \
+    NAMEID_FORMAT_EMAILADDRESS
 from saml2.samlp import name_id_policy_from_string
 from saml2.server import Server
 
@@ -299,20 +300,28 @@ class SAMLFrontend(FrontendModule, SAMLBaseModule):
             attributes_to_remove = custom_release.get("exclude", [])
             for k in attributes_to_remove:
                 ava.pop(k, None)
-
-        nameid_format = hash_type_to_saml_name_id_format(
-            internal_response.user_id_hash_type)
-        if nameid_format == NAMEID_FORMAT_PERSISTENT:
-            mail = internal_response.attributes.get('mail', None)[0]
-            name_id = NameID(text=mail,
-                             format=nameid_format,
+        try:
+            config_nameidformat = self.config['idp_config']['service']['idp']['name_id_format'][0]
+        except KeyError:
+            config_nameidformat = None
+            satosa_logging(logger, logging.DEBUG, "No nameid format configured for frontend idp",
+                           context.state)
+        if config_nameidformat == NAMEID_FORMAT_EMAILADDRESS:
+            nameidfmt = NAMEID_FORMAT_EMAILADDRESS
+            nameidval = internal_response.attributes.get('mail', None)[0]
+            name_id = NameID(text=nameidval,
+                             format=nameidfmt,
                              sp_name_qualifier=None,
                              name_qualifier=None)
         else:
-            name_id = NameID(text=internal_response.user_id,
-                             format=nameid_format,
+            nameidfmt = hash_type_to_saml_name_id_format(internal_response.user_id_hash_type)
+            nameidval = internal_response.user_id
+            name_id = NameID(text=nameidval,
+                             format=nameidfmt,
                              sp_name_qualifier=None,
                              name_qualifier=None)
+        satosa_logging(logger, logging.DEBUG, "Set nameid with format %s to '%s'" %
+                       (nameidfmt, nameidval), context.state)
 
         dbgmsg = "returning attributes %s" % json.dumps(ava)
         satosa_logging(logger, logging.DEBUG, dbgmsg, context.state)

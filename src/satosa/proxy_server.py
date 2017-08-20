@@ -96,6 +96,7 @@ class WsgiApplication(SATOSABase):
 
         context = Context()
         context.path = path
+        logger.debug('HTTP Request: ' + path)
 
         # copy wsgi.input stream to allow it to be re-read later by satosa plugins
         # see: http://stackoverflow.com/questions/1783383/how-do-i-copy-wsgi-input-if-i-want-to-process-post-data-more-than-once
@@ -117,7 +118,9 @@ class WsgiApplication(SATOSABase):
             resp = NotFound("Couldn't find the page you asked for!")
             return resp(environ, start_response)
         except Exception as err:
-            logger.exception("%s" % err)
+            from saml2.s_utils import UnknownSystemEntity
+            if type(err) != UnknownSystemEntity:
+                logger.exception("%s" % err)
             if debug:
                 raise
 
@@ -141,8 +144,8 @@ def make_app(satosa_config):
             pkg = pkg_resources.get_distribution(module.__name__)
             logger.info("Running SATOSA version %s",
                         pkg_resources.get_distribution("SATOSA").version)
-        except pkg_resources.DistributionNotFound:
-            continue
+        except (NameError, pkg_resources.DistributionNotFound):
+            pass
         return ToBytesMiddleware(WsgiApplication(satosa_config))
     except Exception:
         logger.exception("Failed to create WSGI app.")
