@@ -1,0 +1,46 @@
+attributes:
+  address:
+    openid: [address.street_address]
+    saml: [postaladdress]
+  displayname:
+    openid: [nickname]
+    github: [login]
+    saml: [displayName]
+  givenname:
+    facebook: [first_name]
+    linkedin: [email-address]
+    openid: [given_name]
+    saml: [givenName]
+    pvp_egovtoken: [givenName, PVP-GIVENNAME]
+  mail:
+    facebook: [email]
+    linkedin: [email-address]
+    github: [email]
+    openid: [email]
+    saml: [email, emailAdress, mail]
+    pvp_egovtoken: [mail, PVP-MAIL]
+  name:
+    facebook: [name]
+    github: [name]
+    openid: [name]
+    saml: [cn]
+  surname:
+    facebook: [last_name]
+    linkedin: [lastName]
+    openid: [family_name]
+    saml: [sn, surname]
+    pvp_egovtoken: [PVP-PRINCIPAL-NAME]
+  tel:
+    saml: [telephoneNumber]
+    pvp_egovtoken: [telephoneNumber, PVP-TEL]
+  userid:
+    saml: [uid]
+    pvp_egovtoken: [uid, PVP-USERID]
+  roles:
+    pvp_egovtoken: [PVP-ROLES]
+  uniqueid:
+    pvp_egovtoken: [PVP-GID]
+
+#hash: [PVP-MAIL]
+user_id_from_attrs: [userid]
+user_id_to_attr: userid

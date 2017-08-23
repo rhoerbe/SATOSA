@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ns0:EntityDescriptor xmlns:ns0="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#" ID="id-L5GouiLh3XrBx7rNZ" entityID="https://test.portalverbund.gv.at/Saml2IDP/proxy.xml"><ns1:Signature Id="Signature1"><ns1:SignedInfo><ns1:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ns1:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ns1:Reference URI="#id-L5GouiLh3XrBx7rNZ"><ns1:Transforms><ns1:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ns1:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ns1:Transforms><ns1:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ns1:DigestValue>kXfM8yYg5H/jkreyoD3DRy8xt/c=</ns1:DigestValue></ns1:Reference></ns1:SignedInfo><ns1:SignatureValue>JbK5df16IovyuttB0CoM4ON72ZCpBd2VeEoaQ+uNqNEeKixIhKoLzEfB3xukSdtw
+TGPkrxDCqqUIWiu0qpt4lOLI8JvIXgapDseL8liXAjCa2UyHrsYx63i6lBNukUY/
+/sV/BIV7/mVHAbF3SQU7UCQBQ0ygnbTDlr38F8dqxyxt8TO88Go7Z782gHZ+1Rvx
+G6fhUzOpjdkPS3DEDMSfZAlPovQZfZOnQeYPwh8WfmKw+aiUJI6KyJeSgiheEG78
+t2DU9z4iDYKYcnqcv5su84iIk8qg777c4kVM61eOgzwAS60mAm8IT9C7eNnEnZy+
+6GUJCOIPg28H8leoWjGx0w==</ns1:SignatureValue><ns1:KeyInfo><ns1:X509Data><ns1:X509Certificate>MIIDPDCCAiQCCQDFPEcuGrfnjjANBgkqhkiG9w0BAQsFADBgMQswCQYDVQQGEwJBVDENMAsGA1UECBMEV2llbjENMAsGA1UEBxMEV2llbjEMMAoGA1UEChMDQktBMQswCQYDVQQLEwJJVDEYMBYGA1UEAxMPc2F0b3NhLW1ldGFkYXRhMB4XDTE3MDcyODEwNTcxOVoXDTI3MDcyNjEwNTcxOVowYDELMAkGA1UEBhMCQVQxDTALBgNVBAgTBFdpZW4xDTALBgNVBAcTBFdpZW4xDDAKBgNVBAoTA0JLQTELMAkGA1UECxMCSVQxGDAWBgNVBAMTD3NhdG9zYS1tZXRhZGF0YTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKoAT9JSgteyrPcMkrwgkoxX7RVrLg9AmMrlVnSMe6Ob5Bs1XBQQ1OdKCwKhPpnOljJDjLBR8uYC9fT87AXUqVJGdknx+sNJwO0TttzGRc1RdVXf/rPlBGb6fDut6ZzP/X//daiBJ7lLy0EKpyigpbcVBq5SLP5O2uL+Fv5GWf0iRDxb+Qm9FtN0XEpcphbgXjluSs7Wrv2A9cdim84Y+Yt2uRNJF06hwd7tJNLFRR2DmmWZcnmJJ3weI7gWVdZ5EU3Ca0reJvlYWCEcdXad1PzIAD2l35T/OzvRXYwZqSwOiARjExpG5lwr6WJMq1M0wllxte8YFehSuvraO7SkNlECAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAEq4f5IEtYCQMs5ZLXjnIJ/xW2M8YVK/ZvUZB04D0Qsgi0qc9Jajj/TnRyuv34E0bx8jYZKYHXPOcD/0O6nhLdUSPqhUJvgs68roV/53K+8qPeqooECoTbfGW7slqS/3olwylhtKCX4WHk3lRiUcEmtpZJ2BMGo20Tvoh2FSn0Ob5v7ykBc4n1YztPzNCHSB9IHOA21Cpda4zCO/jdwZUZ412DprVWEpw1Ktyd2SnkJk3Ksm6lga//4smJgETgpQUCWdJ4CQK+9h29JoFPt9UDdvDspRt7d0oNkGuhDZKiBuq5pyTlg8tmC9YPU8DGX1DiMW0Djiwq+8uoniu4cNddQ==</ns1:X509Certificate></ns1:X509Data></ns1:KeyInfo></ns1:Signature><ns0:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><ns0:KeyDescriptor use="signing"><ns1:KeyInfo><ns1:X509Data><ns1:X509Certificate>MIIDPDCCAiQCCQDfPya5cXF7azANBgkqhkiG9w0BAQsFADBgMQswCQYDVQQGEwJB
+VDENMAsGA1UECBMEV2llbjENMAsGA1UEBxMEV2llbjEMMAoGA1UEChMDQktBMQsw
+CQYDVQQLEwJJVDEYMBYGA1UEAxMPc2F0b3NhLWZyb250ZW5kMB4XDTE3MDcyODEw
+NTc0M1oXDTI3MDcyNjEwNTc0M1owYDELMAkGA1UEBhMCQVQxDTALBgNVBAgTBFdp
+ZW4xDTALBgNVBAcTBFdpZW4xDDAKBgNVBAoTA0JLQTELMAkGA1UECxMCSVQxGDAW
+BgNVBAMTD3NhdG9zYS1mcm9udGVuZDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+AQoCggEBALX57d9fSSVvQDfn9+h5dVWL6mLfhhehAT0bivxUMf9/WDCuuy7UIfrc
+/KxLm/AuC2n7PfCUNeQfukM1si/ffU+cYP9CdJ7BrZtgmn0l2PBTq+mhlKzM/GBE
+baaT5VVD1MH6WlXQw69PVFqgwkZG7n40oDkQqSgb78Rd0PJJFGPHUncwFtxP1l25
+agAa2dzmqZnYVadr9/RVLCFzix7k5iGgcJMsJR0N10T9pUQzB06WScHpSUZp/U3P
+TSgpRKZ609LCtEXbvlWJngOaw1OhMr+TAkdibIa8E1i1Z+cQU0TIK3eBQVyfdzOl
+pWiJncYlOT5gTBwnsJZ4KOdWEFeD6G0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEA
+gIYwrGPqdVDh9OTUGCDbQ5aUhxn5JUpAalM/DqEmQw33VJZtZ4SsiUGvkgRtBFvB
+wXZwtI5Rm5SQzRJ2h+Dizl/7feGjp/E/UjOVgbkabVIsvnstyrFeqbWsNYgyYbOG
+Kogin4i9vRgGJbXKl1gJvCOP6AiqcPsvwmb7eyIIiOkt876KiOQZaGUv81YyNycy
+/EQOrMyjwz7bfUM6XyUZjA3FjFa6OGW/0tAULbZFjreVdO0p+5+O/IDJISU4cK/f
+sH2qIN/pIXHL83Ivbcc9w0pbgHtwBsfGUXQ1lc5yn2B/oePVn1Pi/3zRalhHj19R
+CG6581M21gbTB6AyuWGlBA==
+</ns1:X509Certificate></ns1:X509Data></ns1:KeyInfo></ns0:KeyDescriptor><ns0:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</ns0:NameIDFormat><ns0:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</ns0:NameIDFormat><ns0:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress</ns0:NameIDFormat><ns0:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://test.portalverbund.gv.at/Saml2/sso/redirect"/><ns0:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test.portalverbund.gv.at/Saml2/sso/post"/></ns0:IDPSSODescriptor><ns0:Organization><ns0:OrganizationName xml:lang="en">idp4-test portalverbund.gv.at</ns0:OrganizationName><ns0:OrganizationDisplayName xml:lang="en">idp4-test</ns0:OrganizationDisplayName><ns0:OrganizationURL xml:lang="en">https://idp4.test.portalverbund.gv.at</ns0:OrganizationURL></ns0:Organization><ns0:ContactPerson contactType="technical"><ns0:GivenName>Technical</ns0:GivenName><ns0:EmailAddress>technical@example.com</ns0:EmailAddress></ns0:ContactPerson><ns0:ContactPerson contactType="support"><ns0:GivenName>Support</ns0:GivenName><ns0:EmailAddress>support@example.com</ns0:EmailAddress></ns0:ContactPerson></ns0:EntityDescriptor>

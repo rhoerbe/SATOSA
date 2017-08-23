@@ -40,6 +40,7 @@ class AttributeMapper(object):
             for profile, external_attribute_names in mappings.items():
                 for external_attribute_name in external_attribute_names:
                     self.to_internal_attributes[profile][external_attribute_name] = internal_attribute_name
+        pass
 
     def to_internal_filter(self, attribute_profile, external_attribute_names):
         """
@@ -88,7 +89,8 @@ class AttributeMapper(object):
 
         for internal_attribute_name, mapping in self.from_internal_attributes.items():
             if attribute_profile not in mapping:
-                logger.debug("no attribute mapping found for the attribute profile '%s'", attribute_profile)
+                logger.debug("no attribute mapping found for internal attribute '%s' the attribute profile '%s'" % (
+                    internal_attribute_name, attribute_profile))
                 # skip this internal attribute if we have no mapping in the specified profile
                 continue
 
@@ -96,7 +98,11 @@ class AttributeMapper(object):
             attribute_values = self._collate_attribute_values_by_priority_order(external_attribute_name,
                                                                                 external_dict)
             if attribute_values:  # Only insert key if it has some values
+                logger.debug("backend attribute '%s' mapped to %s" % (external_attribute_name,
+                                                            internal_attribute_name))
                 internal_dict[internal_attribute_name] = attribute_values
+            else:
+                logger.debug("skipped backend attribute '%s': no value found", external_attribute_name)
 
         internal_dict = self._handle_template_attributes(attribute_profile, internal_dict)
         return internal_dict
@@ -181,12 +187,16 @@ class AttributeMapper(object):
 
             if attribute_profile not in attribute_mapping:
                 # skip this internal attribute if we have no mapping in the specified profile
-                logger.debug("no attribute mapping found for the attribute profile '%s'", attribute_profile)
+                logger.debug("no mapping found for '%s' in attribute profile '%s'" %
+                             (internal_attribute_name,
+                             attribute_profile))
                 continue
 
             external_attribute_names = self.from_internal_attributes[internal_attribute_name][attribute_profile]
             # select the first attribute name
             external_attribute_name = external_attribute_names[0]
+            logger.debug("frontend attribute %s mapped from %s" % (external_attribute_name,
+                                                                   internal_attribute_name))
 
             if self.separator in external_attribute_name:
                 nested_attribute_names = external_attribute_name.split(self.separator)

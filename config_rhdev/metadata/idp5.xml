@@ -1,0 +1,91 @@
+<md:EntityDescriptor
+	xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+	xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
+	xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+	xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
+    xmlns:alg="urn:oasis:names:tc:SAML:metadata:algsupport"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    entityID="https://idp5.test.portalverbund.gv.at/idp.xml">
+    <md:Extensions>
+        <mdattr:EntityAttributes>
+            <saml:Attribute Name="http://macedir.org/entity-category"
+                            NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue>http://www.ref.gv.at/ns/names/agiz/pvp/egovtoken</saml:AttributeValue>
+            </saml:Attribute>
+        </mdattr:EntityAttributes>
+    </md:Extensions>
+    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:Extensions>
+            <alg:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"/>
+            <alg:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+            <alg:SigningMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <alg:SigningMethod MinKeySize="2048" MaxKeySize="4096"
+                               Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+            <alg:SigningMethod MinKeySize="2048" MaxKeySize="4096"
+                               Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512"/>
+            <mdui:UIInfo>
+                <mdui:DisplayName xml:lang="de">IDP5 PVP2 Testfederation</mdui:DisplayName>
+                <mdui:DisplayName xml:lang="en">IDP5 PVP2 Testfederation</mdui:DisplayName>
+                <mdui:Description xml:lang="de">AGIZ Testfederation simple Shibboleth IDP</mdui:Description>
+                <mdui:Logo xml:lang="en" height="70" width="79">http://md.test.portalverbund.gv.at/pvpLogo.png
+                </mdui:Logo>
+            </mdui:UIInfo>
+            <mdui:DiscoHints>
+                <mdui:DomainHint>portalverbund.at</mdui:DomainHint>
+                <mdui:IPHint>81.217.70.0/24</mdui:IPHint>
+            </mdui:DiscoHints>
+        </md:Extensions>
+        <md:KeyDescriptor use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        MIIDZTCCAk2gAwIBAgIUTMaFU3su5h9xBQJPalVsbOR7DBMwDQYJKoZIhvcNAQELBQAwKTEnMCUG
+                        A1UEAwweaWRwMS50ZXN0Lndwdi5wb3J0YWx2ZXJidW5kLmF0MB4XDTE2MDMwOTA5MjUwOVoXDTM2
+                        MDMwOTA5MjUwOVowKTEnMCUGA1UEAwweaWRwMS50ZXN0Lndwdi5wb3J0YWx2ZXJidW5kLmF0MIIB
+                        IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6PRWhTPw8jDeIs0KNHxFe8vBTKgGJLtTBGz/
+                        I2qbHtvzQjDwy7l7t3VhC4bvCHU6q6LhprG1yblTs4mZOxNG3FgBSXfnlAz7LYaTksXGHLLrtcrf
+                        ODJggg+SDac6OaOLlN7HuvVIZMeGenQOL82av5FEB1SWl8YEnWx+jWBf4OiHGtUGqJ9FbFfvmMRU
+                        tBEil0xT53gBkNWcZ3T0IvRioVcCrr+mcoxHNH3JHuGmQ8xqZWZ27IoddTILEl5MXH9Kc5M3Pc/7
+                        5lXCDahQsqG1d40gzE3mEG2OmtlTb+FfJB4sXsH3y3pfO9hTNo/B7PfCv9wNdFk1moa8J2SLX/xC
+                        wwIDAQABo4GEMIGBMB0GA1UdDgQWBBQjGS9lXXW7CryQS/nTjb9mywvR8zBgBgNVHREEWTBXgh5p
+                        ZHAxLnRlc3Qud3B2LnBvcnRhbHZlcmJ1bmQuYXSGNWh0dHBzOi8vaWRwMS50ZXN0Lndwdi5wb3J0
+                        YWx2ZXJidW5kLmF0L2lkcC9zaGliYm9sZXRoMA0GCSqGSIb3DQEBCwUAA4IBAQDI0+RooeNeMr5l
+                        YOTE55kRFy8iWyx3szlsUw5qm27w8Mmu+lRBMPpwkDnDQ+TyUApOiU41i4EZXNwywEnwQGCFp8R4
+                        2Is2ECYqM6OIpW+Cf5HwsjwkeEj+Vr5o29mEAzzQFBVINF0FNPEV4xBdyRWI06E4B1FXW5zdn9sB
+                        8qIWwO3TpxvMQbQhvgQXva0OryhhmJ8qIaHqaR3owMZvu6lD7R7ei5z6NEgOlKcbp6K+B79nv8yz
+                        8DNvV303f9fn3V29TDVm8O5bvAFOND6uWGNOG1xQJMeyV8hZMDFWfjp4Q5y/P1JIa7WVwv8dSTuw
+                        HbehCp85eKIvxkaknQcJ1Ksh
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+                                      Location="https://idp5.test.portalverbund.gv.at:8443/idp/profile/SAML2/SOAP/ArtifactResolution"
+                                      index="2"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                                Location="https://idp5.test.portalverbund.gv.at/idp/profile/SAML2/Redirect/SLO"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+                                Location="https://idp5.test.portalverbund.gv.at:8443/idp/profile/SAML2/SOAP/SLO"/>
+        <md:NameIDFormat>
+            urn:oasis:names:tc:SAML:2.0:nameid-format:transient
+        </md:NameIDFormat>
+        <md:NameIDFormat>
+            urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+        </md:NameIDFormat>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                                Location="https://idp5.test.portalverbund.gv.at/idp/profile/SAML2/POST/SSO"/>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                                Location="https://idp5.test.portalverbund.gv.at/idp/profile/SAML2/Redirect/SSO"/>
+    </md:IDPSSODescriptor>
+    <md:Organization>
+        <md:OrganizationName xml:lang="de">PVP2 SAML Testfederation</md:OrganizationName>
+        <md:OrganizationDisplayName xml:lang="de">AG-IZ Testumgebung f. PVP2 SAML</md:OrganizationDisplayName>
+        <md:OrganizationURL xml:lang="de">http://www.portalverbund.at</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="technical">
+        <md:GivenName>Rainer</md:GivenName>
+        <md:SurName>Hoerbe</md:SurName>
+        <md:EmailAddress>rh_testfed_pv_at@mail.hoerbe.at</md:EmailAddress>
+        <md:TelephoneNumber>+43 000 9999 0000</md:TelephoneNumber>
+    </md:ContactPerson>
+</md:EntityDescriptor>

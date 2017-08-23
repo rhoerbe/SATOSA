@@ -1,0 +1,38 @@
+module: satosa.frontends.saml2.SAMLFrontend
+name: Saml2IDP
+config:
+  idp_config:
+    organization: {display_name: idp4-test, name: idp4-test portalverbund.gv.at, url: 'https://idp4.test.portalverbund.gv.at'}
+    contact_person:
+    - {contact_type: technical, email_address: technical@example.com, given_name: Technical}
+    - {contact_type: support, email_address: support@example.com, given_name: Support}
+    key_file: keys/frontend.key
+    cert_file: keys/frontend.crt
+    metadata:
+      #local: [metadata/test.ucom.gv.at.xml]
+      local: [metadata/rocketchat.test.portalverbund.gv.at_sp.xml]
+
+    entityid: <base_url>/<name>/proxy.xml
+    service:
+      idp:
+        endpoints:
+          single_sign_on_service: []
+        name: Proxy IdP
+        name_id_format: ['urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress']
+        policy:
+          default:
+            attribute_restrictions: null
+            fail_on_missing_requested: false
+            lifetime: {minutes: 15}
+            name_form: urn:oasis:names:tc:SAML:2.0:attrname-format:uri
+    custom_attribute_release:
+        "default":
+            "":
+                exclude: ["tel"]
+  #acr_mapping:
+  #  "http://www.ref.gv.at/ns/names/agiz/pvp/secclass/0-1": default-LoA
+  #  "http://www.ref.gv.at/ns/names/agiz/pvp/secclass/0-2": LoA2
+
+  endpoints:
+    single_sign_on_service: {'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST': sso/post,
+      'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect': sso/redirect}
