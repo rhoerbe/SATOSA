@@ -31,7 +31,7 @@ EXPOSE $PROXY_PORT
 ARG USERNAME=satosa
 ARG UID=1001
 RUN groupadd -g $UID $USERNAME \
- && adduser --gid $UID --home /opt/satosa/ --disabled-password --gecos "" --uid $UID $USERNAME \
+ && adduser --gid $UID --disabled-password --gecos "" --uid $UID $USERNAME \
  && chown -R $USERNAME:$USERNAME /opt/satosa
 
 USER $USERNAME
