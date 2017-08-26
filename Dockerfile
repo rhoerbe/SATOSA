@@ -1,4 +1,5 @@
 FROM ubuntu:16.04
+LABEL capabilities='--cap-drop=all'
 
 RUN apt-get update && \
     apt-get -y dist-upgrade && \
@@ -26,3 +27,9 @@ VOLUME /opt/satosa/etc
 CMD ["/start.sh"]
 ARG PROXY_PORT=8000
 EXPOSE $PROXY_PORT
+
+ARG USERNAME=satosa
+ARG UID=1001
+RUN groupadd -g $UID $USERNAME \
+ && adduser --gid $UID --home /opt/satosa/ --disabled-password --gecos "" --uid $UID $USERNAME
+USER $USERNAME
