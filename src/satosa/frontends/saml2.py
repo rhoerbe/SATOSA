@@ -12,7 +12,7 @@ from saml2.config import IdPConfig
 from saml2.extension.ui import NAMESPACE as UI_NAMESPACE
 from saml2.metadata import create_metadata_string
 from saml2.saml import NameID, NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_PERSISTENT, \
-    NAMEID_FORMAT_EMAILADDRESS
+    NAMEID_FORMAT_EMAILADDRESS, NAMEID_FORMAT_UNSPECIFIED
 from saml2.samlp import name_id_policy_from_string
 from saml2.server import Server
 
@@ -60,12 +60,14 @@ def hash_type_to_saml_name_id_format(hash_type):
     :param hash_type: satosa format
     :return: pySAML2 name format
     """
-    if hash_type == UserIdHashType.transient.name:
+    if hash_type == UserIdHashType.transient:
         return NAMEID_FORMAT_TRANSIENT
-    elif hash_type == UserIdHashType.persistent.name:
+    elif hash_type == UserIdHashType.persistent:
         return NAMEID_FORMAT_PERSISTENT
     elif hash_type == UserIdHashType.public_email:
         return NAMEID_FORMAT_EMAILADDRESS
+    elif hash_type is None:
+        return NAMEID_FORMAT_UNSPECIFIED
     else:
         raise SATOSAModuleError('Mapping to SAML NameID Format {} '
                                 'not implemented'.format(hash_type.name))
