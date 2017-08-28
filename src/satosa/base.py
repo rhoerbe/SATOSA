@@ -122,11 +122,13 @@ class SATOSABase(object):
 
     def _auth_resp_finish(self, context, internal_response):
         # re-hash user id since e.g. account linking micro service might have changed it
-        user_id = UserIdHasher.hash_id(self.config["USER_ID_HASH_SALT"],
-                                       internal_response.user_id,
-                                       internal_response.requester,
-                                       context.state)
-        internal_response.user_id = user_id
+        # removed for nameid-emailaddress because  user_id_hash_type which is None
+        # and hashing cannot be made conditional. TODO: set user_id_hash_type properly
+        #user_id = UserIdHasher.hash_id(self.config["USER_ID_HASH_SALT"],
+        #                               internal_response.user_id,
+        #                               internal_response.requester,
+        #                               context.state)
+        #internal_response.user_id = user_id
         internal_response.user_id_hash_type = UserIdHasher.hash_type(context.state)
         user_id_to_attr = self.config["INTERNAL_ATTRIBUTES"].get("user_id_to_attr", None)
         if user_id_to_attr:
@@ -167,9 +169,10 @@ class SATOSABase(object):
             user_id = ["".join(internal_response.attributes[attr]) for attr in
                        self.config["INTERNAL_ATTRIBUTES"]["user_id_from_attrs"]]
             internal_response.user_id = "".join(user_id)
-        # Hash the user id
-        user_id = UserIdHasher.hash_data(self.config["USER_ID_HASH_SALT"], internal_response.user_id)
-        internal_response.user_id = user_id
+        # Hash the user id  # removed for nameid-emailaddress because  user_id_hash_type which is None
+        # and hashing cannot be made conditional. TODO: set user_id_hash_type properly
+        #user_id = UserIdHasher.hash_data(self.config["USER_ID_HASH_SALT"], internal_response.user_id)
+        #internal_response.user_id = user_id
 
         if self.response_micro_services:
             return self.response_micro_services[0].process(context, internal_response)
