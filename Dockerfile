@@ -23,7 +23,6 @@ RUN chmod +x /setup.sh /start.sh \
 
 COPY docker/attributemaps /opt/satosa/attributemaps
 
-VOLUME /opt/satosa/etc
 CMD ["/start.sh"]
 ARG PROXY_PORT=8000
 EXPOSE $PROXY_PORT
@@ -33,5 +32,7 @@ ARG UID=1001
 RUN groupadd -g $UID $USERNAME \
  && adduser --gid $UID --disabled-password --gecos "" --uid $UID $USERNAME \
  && chown -R $USERNAME:$USERNAME /opt/satosa
+
+VOLUME /opt/satosa/etc
 
 USER $USERNAME
