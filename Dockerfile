@@ -31,7 +31,7 @@ ARG USERNAME=satosa
 ARG UID=1001
 RUN groupadd -g $UID $USERNAME \
  && adduser --gid $UID --disabled-password --gecos "" --uid $UID $USERNAME \
- && mkdir -p /opt/satosa/etc
+ && mkdir -p /opt/satosa/etc \
  && chown -R $USERNAME:$USERNAME /opt/satosa
 
 VOLUME /opt/satosa/etc
