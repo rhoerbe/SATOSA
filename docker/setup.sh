@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 pip3 install --upgrade virtualenv
 
 virtualenv -p python3 /opt/satosa
@@ -9,7 +9,7 @@ virtualenv -p python3 /opt/satosa
 cd /src
 git clone https://github.com/rohe/pysaml2
 cd pysaml2
-python setup.py install
+/opt/satosa/bin/python setup.py install
 
 /opt/satosa/bin/pip install /src/satosa/
 
