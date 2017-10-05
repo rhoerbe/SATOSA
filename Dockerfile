@@ -11,7 +11,7 @@ RUN apt-get update && \
     libffi-dev \
     libssl-dev \
     xmlsec1 \
-    libyaml-dev && \
+    libyaml-dev vim && \
     apt-get clean
 
 RUN mkdir -p /src/satosa
