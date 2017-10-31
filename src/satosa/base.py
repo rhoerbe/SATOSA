@@ -226,7 +226,10 @@ class SATOSABase(object):
         try:
             state = cookie_to_state(context.cookie, self.config["COOKIE_STATE_NAME"],
                                     self.config["STATE_ENCRYPTION_KEY"])
-        except SATOSAStateError:
+        except Exception as error:
+            msg = "Ignoring state because decrypting SATOSA_STATE='{}' failed. {}".format(context.cookie,
+                                                                                    str(error))
+            satosa_logging(logger, logging.WARNING, msg, None)
             state = State()
         context.state = state
 
