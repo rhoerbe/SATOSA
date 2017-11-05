@@ -27,7 +27,7 @@ class Response(object):
         _content_type = content if content is not None else self._content_type
         self.status = status if status is not None else self._status
         self.headers = headers if headers is not None else []
-        self.message = message
+        self.message = message if message is not None else ""
 
         should_add_content_type = not any(header[0].lower() == "content-type" for header in self.headers)
         if should_add_content_type:

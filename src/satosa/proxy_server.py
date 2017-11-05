@@ -4,12 +4,13 @@ import logging
 import logging.config
 import sys
 from urllib.parse import parse_qsl
+from http.cookies import SimpleCookie
 
 import pkg_resources
 
 from .base import SATOSABase
 from .context import Context
-from .response import ServiceError, NotFound
+from .response import ServiceError, NotFound, Response
 from .routing import SATOSANoBoundEndpointError
 from saml2.s_utils import UnknownSystemEntity
 
@@ -94,6 +95,14 @@ class WsgiApplication(SATOSABase):
         if ".." in path or path == "":
             resp = NotFound("Couldn't find the page you asked for!")
             return resp(environ, start_response)
+        elif path == 'Saml2/sso/set_idp':      # endpoint to set cookie for later AuthnRequest
+            resp = Response("cookie may have been set")     # TODO: fix this with an extension to the saml2 backend
+            return resp(environ, start_response)
+        elif path == 'Saml2/sso/set_idp_test':   # set cookie with preselected ido (test only)
+            headers = [('Set-Cookie', "SATOSA_IDP1ST_ENTITYID=https://idp5.test.portalverbund.gv.at/idp.xml"), ]
+            resp = Response(message='Cookie gesetzt', status="200 OK", headers=headers, content="setting cookie")
+            #resp = Response("setting cookie")
+            return resp(environ, start_response)
 
         context = Context()
         context.path = path
@@ -108,6 +117,7 @@ class WsgiApplication(SATOSABase):
 
         context.cookie = environ.get("HTTP_COOKIE", "")
         context.request_authorization = environ.get("HTTP_AUTHORIZATION", "")
+        context.idp1st_entityid = SimpleCookie(context.cookie)["SATOSA_IDP1ST_ENTITYID"].value
 
         try:
             resp = self.run(context)
