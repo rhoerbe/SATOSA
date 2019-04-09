@@ -32,7 +32,7 @@ if [ ! -d ${DATA_DIR}/attributemaps ]; then
 fi
 
 # Activate virtualenv
-. /opt/satosa/bin/activate
+. /opt/venv/bin/activate
 
 # generate metadata for front- (IdP) and back-end (SP) and write it to mounted volume
 
