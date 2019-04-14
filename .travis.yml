@@ -11,10 +11,10 @@ install:
 - pip install -U tox
 matrix:
   include:
-  - python: 3.4.4
-    env: TOXENV=py34
   - python: 3.5
     env: TOXENV=py35
+  - python: 3.6
+    env: TOXENV=py36
 script:
 - tox
 deploy:
