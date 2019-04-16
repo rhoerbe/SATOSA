@@ -2,7 +2,8 @@
 Response objects used in satosa
 """
 
-
+#from autologging import traced
+#@traced
 class Response(object):
     """
     A response object
@@ -48,7 +49,7 @@ class Response(object):
         start_response(self.status, self.headers)
         return [self.message] if not isinstance(self.message, list) else self.message
 
-
+#@traced
 class Redirect(Response):
     """
     A Redirect response

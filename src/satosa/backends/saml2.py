@@ -34,7 +34,8 @@ from satosa.deprecated import SAMLInternalResponse
 
 logger = logging.getLogger(__name__)
 
-
+#from autologging import traced
+#@traced
 class SAMLBackend(BackendModule, SAMLBaseModule):
     """
     A saml2 backend module (acting as a SP).

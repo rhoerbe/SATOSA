@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 
 STATE_KEY = "SATOSA_BASE"
 
-
+#from autologging import traced
+#@traced
 class SATOSABase(object):
     """
     Base class for a satosa proxy server.

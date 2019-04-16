@@ -54,7 +54,8 @@ subject_type_map = {
 def subject_type_to_saml_nameid_format(subject_type):
     return subject_type_map.get(subject_type, NAMEID_FORMAT_PERSISTENT)
 
-
+#from autologging import traced
+#@traced
 class SAMLFrontend(FrontendModule, SAMLBaseModule):
     """
     A pysaml2 frontend module
@@ -680,7 +681,7 @@ class SAMLMirrorFrontend(SAMLFrontend):
             for binding, endp in self.endpoints[endp_category].items():
                 valid_providers = "|^".join(providers)
                 parsed_endp = urlparse(endp)
-                url_map.append(("(^%s)/\S+/%s" % (valid_providers, parsed_endp.path),
+                url_map.append((r"(^%s)/\S+/%s" % (valid_providers, parsed_endp.path),
                                 functools.partial(self.handle_authn_request, binding_in=binding)))
 
         return url_map

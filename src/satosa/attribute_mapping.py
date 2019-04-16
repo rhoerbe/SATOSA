@@ -18,7 +18,8 @@ def scope(s):
     (local_part, _, domain_part) = s.partition('@')
     return domain_part
 
-
+from autologging import traced
+@traced()
 class AttributeMapper(object):
     """
     Converts between internal and external data format
