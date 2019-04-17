@@ -123,7 +123,7 @@ class WsgiApplication(SATOSABase):
         except Exception as err:
             if type(err) != UnknownSystemEntity:
                 logger.exception("%s" % err)
-            if true: # debug:
+            if debug:
                 raise
 
             resp = ServiceError("%s" % err)
