@@ -23,7 +23,8 @@ setup(
         "gunicorn",
         "Werkzeug",
         "click",
-        "pystache"
+        "pystache",
+        "autologging",
     ],
     extras_require={
         "ldap": ["ldap3"]

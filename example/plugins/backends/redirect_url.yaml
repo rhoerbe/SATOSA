@@ -1,0 +1,4 @@
+module: satosa.micro_services.redirect_url.RedirectUrl
+name: RedirectUrl
+config:
+  redirect_url_attr: wkisRedirect
