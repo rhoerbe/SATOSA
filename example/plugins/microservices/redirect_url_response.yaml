@@ -1,0 +1,5 @@
+module: satosa.micro_services.redirect_url.RedirectUrlResponse
+name: RedirectUrlResponse
+config:
+  redirect_attr_name: WkisRedirect
+  redir_entityid: http://wkis.qss.wko.at/adfs/services/trust

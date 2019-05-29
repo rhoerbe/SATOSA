@@ -1,0 +1,4 @@
+module: satosa.micro_services.redirect_url.RedirectUrlRequest
+name: RedirectUrlRequest
+config:
+  dummy: 'require non-empty config to load module'
