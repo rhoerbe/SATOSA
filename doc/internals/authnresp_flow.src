@@ -1,13 +1,17 @@
 # Render with https://www.websequencediagrams.com
 
-title SATOSA v3.4.8 SAML Authn Response Sequence
+title SATOSA SAML Authn Response
+# v3.4.8
 
 note right of Gunicorn: GET \nsaml2/acs/post
+Gunicorn->*SATOSA_STATE: preceding\nAuthnRequest
 Gunicorn->+WsgiApplication\n(SATOSABase): __call__
 WsgiApplication\n(SATOSABase)->*Context:
 WsgiApplication\n(SATOSABase)->WsgiApplication\n(SATOSABase): unpack_request()
 WsgiApplication\n(SATOSABase)->+WsgiApplication\n(SATOSABase): run(Context)
-WsgiApplication\n(SATOSABase)->WsgiApplication\n(SATOSABase): _load_state(Context)
+WsgiApplication\n(SATOSABase)->+WsgiApplication\n(SATOSABase): _load_state(Context)
+  SATOSA_STATE-->WsgiApplication\n(SATOSABase):
+WsgiApplication\n(SATOSABase)-->-WsgiApplication\n(SATOSABase):
 WsgiApplication\n(SATOSABase)->+ModuleRouter: endpoint_routing(context) -> endpoint
 ModuleRouter-->-WsgiApplication\n(SATOSABase): authn_response
 
@@ -46,5 +50,8 @@ end
 WsgiApplication\n(SATOSABase)-->-SAMLBackend\n(Backendmodule):
 SAMLBackend\n(Backendmodule)-->-WsgiApplication\n(SATOSABase):
 WsgiApplication\n(SATOSABase)-->-WsgiApplication\n(SATOSABase):
-WsgiApplication\n(SATOSABase)->WsgiApplication\n(SATOSABase): _save_state(Context)
+WsgiApplication\n(SATOSABase)->+WsgiApplication\n(SATOSABase): _save_state(Context)
+  destroy SATOSA_STATE
+WsgiApplication\n(SATOSABase)-->WsgiApplication\n(SATOSABase):
 WsgiApplication\n(SATOSABase)-->-Gunicorn:
+

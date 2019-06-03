@@ -1,6 +1,7 @@
 # Render with https://www.websequencediagrams.com
 
-title SATOSA v3.4.8 SAML Authn Request Sequence
+title SATOSA SAML Authn Request
+# v3.4.8
 
 
 note right of Gunicorn: GET \n/saml2/sso/redirect
@@ -10,8 +11,9 @@ WsgiApplication\n(SATOSABase)->WsgiApplication\n(SATOSABase): unpack_request()\n
 
 WsgiApplication\n(SATOSABase)->+WsgiApplication\n(SATOSABase): run(Context)
 WsgiApplication\n(SATOSABase)->WsgiApplication\n(SATOSABase): _load_state(Context)
-WsgiApplication\n(SATOSABase)->+ModuleRouter: endpoint_routing(context) -> endpoint
-ModuleRouter-->-WsgiApplication\n(SATOSABase): handle_authn_request
+WsgiApplication\n(SATOSABase)->+ModuleRouter: endpoint_routing(context)
+note right of ModuleRouter, SAMLFrontend\n(Frontendmodule): endpoint function=handle_authn_request
+ModuleRouter-->-WsgiApplication\n(SATOSABase): endpoint function
 
 WsgiApplication\n(SATOSABase)-->+WsgiApplication\n(SATOSABase): _run_bound_endpoint(\nhandle_authn_request)
 WsgiApplication\n(SATOSABase)->+SAMLFrontend\n(Frontendmodule): handle_authn_request
