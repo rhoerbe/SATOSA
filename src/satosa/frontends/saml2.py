@@ -54,8 +54,7 @@ subject_type_map = {
 def subject_type_to_saml_nameid_format(subject_type):
     return subject_type_map.get(subject_type, NAMEID_FORMAT_PERSISTENT)
 
-#from autologging import traced
-#@traced
+
 class SAMLFrontend(FrontendModule, SAMLBaseModule):
     """
     A pysaml2 frontend module
@@ -75,7 +74,7 @@ class SAMLFrontend(FrontendModule, SAMLBaseModule):
             self.KEY_CUSTOM_ATTR_RELEASE)
         self.idp = None
 
-    def handle_authn_response(self, context, internal_response):
+    def handle_authn_response(self, context, internal_response, **kwargs):
         """
         See super class method satosa.frontends.base.FrontendModule#handle_authn_response
         :type context: satosa.context.Context
@@ -84,7 +83,7 @@ class SAMLFrontend(FrontendModule, SAMLBaseModule):
         """
         return self._handle_authn_response(context, internal_response, self.idp)
 
-    def handle_authn_request(self, context, binding_in):
+    def handle_authn_request(self, context, binding_in, **kwargs):
         """
         This method is bound to the starting endpoint of the authentication.
 

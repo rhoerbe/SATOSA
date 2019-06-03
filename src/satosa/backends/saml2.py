@@ -34,8 +34,8 @@ from satosa.deprecated import SAMLInternalResponse
 
 logger = logging.getLogger(__name__)
 
-#from autologging import traced
-#@traced
+from autologging import traced
+@traced
 class SAMLBackend(BackendModule, SAMLBaseModule):
     """
     A saml2 backend module (acting as a SP).
@@ -141,7 +141,7 @@ class SAMLBackend(BackendModule, SAMLBaseModule):
 
         return authn_context
 
-    def authn_request(self, context, entity_id):
+    def authn_request(self, context, entity_id, **kwargs):
         """
         Do an authorization request on idp with given entity id.
         This is the start of the authorization.
@@ -195,7 +195,7 @@ class SAMLBackend(BackendModule, SAMLBaseModule):
         context.state[self.name] = {"relay_state": relay_state}
         return make_saml_response(binding, ht_args)
 
-    def authn_response(self, context, binding):
+    def authn_response(self, context, binding, **kwargs):
         """
         Endpoint for the idp response
         :type context: satosa.context,Context
@@ -238,7 +238,7 @@ class SAMLBackend(BackendModule, SAMLBaseModule):
         del context.state[self.name]
         return self.auth_callback_func(context, self._translate_response(authn_response, context.state))
 
-    def disco_response(self, context):
+    def disco_response(self, context, **kwargs):
         """
         Endpoint for the discovery server response
 
