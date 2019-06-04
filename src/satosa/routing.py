@@ -50,7 +50,7 @@ class ModuleRouter(object):
         module
         """
 
-        if not frontends and not backends:
+        if not frontends or not backends:
             raise ValueError("Need at least one frontend and one backend")
 
         backend_names = [backend.name for backend in backends]
@@ -150,7 +150,7 @@ class ModuleRouter(object):
 
         try:
             name, frontend_endpoint = self._find_registered_endpoint(context, self.frontends)
-        except ModuleRouter.UnknownEndpoint as e:
+        except ModuleRouter.UnknownEndpoint:
             pass
         else:
             context.target_frontend = name
@@ -158,7 +158,7 @@ class ModuleRouter(object):
 
         try:
             name, micro_service_endpoint = self._find_registered_endpoint(context, self.micro_services)
-        except ModuleRouter.UnknownEndpoint as e:
+        except ModuleRouter.UnknownEndpoint:
             pass
         else:
             context.target_micro_service = name
