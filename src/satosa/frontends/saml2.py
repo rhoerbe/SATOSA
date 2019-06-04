@@ -78,7 +78,7 @@ class SAMLFrontend(FrontendModule, SAMLBaseModule):
             self.KEY_CUSTOM_ATTR_RELEASE)
         self.idp = None
 
-    def handle_authn_response(self, context, internal_response):
+    def handle_authn_response(self, context, internal_response, **kwargs):
         """
         See super class method satosa.frontends.base.FrontendModule#handle_authn_response
         :type context: satosa.context.Context
@@ -87,7 +87,7 @@ class SAMLFrontend(FrontendModule, SAMLBaseModule):
         """
         return self._handle_authn_response(context, internal_response, self.idp)
 
-    def handle_authn_request(self, context, binding_in):
+    def handle_authn_request(self, context, binding_in, **kwargs):
         """
         This method is bound to the starting endpoint of the authentication.
 
@@ -684,7 +684,7 @@ class SAMLMirrorFrontend(SAMLFrontend):
             for binding, endp in self.endpoints[endp_category].items():
                 valid_providers = "|^".join(providers)
                 parsed_endp = urlparse(endp)
-                url_map.append(("(^%s)/\S+/%s" % (valid_providers, parsed_endp.path),
+                url_map.append((r"(^%s)/\S+/%s" % (valid_providers, parsed_endp.path),
                                 functools.partial(self.handle_authn_request, binding_in=binding)))
 
         return url_map

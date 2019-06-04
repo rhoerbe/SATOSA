@@ -6,6 +6,7 @@ import sys
 from urllib.parse import parse_qsl
 
 import pkg_resources
+import autologging
 
 from .base import SATOSABase
 from .context import Context
@@ -134,12 +135,13 @@ def make_app(satosa_config):
         if "LOGGING" in satosa_config:
             logging.config.dictConfig(satosa_config["LOGGING"])
         else:
-            stderr_handler = logging.StreamHandler(sys.stderr)
-            stderr_handler.setLevel(logging.DEBUG)
-
-            root_logger = logging.getLogger("")
-            root_logger.addHandler(stderr_handler)
-            root_logger.setLevel(logging.DEBUG)
+            logging.basicConfig(level=autologging.TRACE, stream=sys.stdout,
+                                format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+            #stderr_handler = logging.StreamHandler(sys.stderr)
+            #stderr_handler.setLevel(logging.DEBUG)
+            #root_logger = logging.getLogger("")
+            #root_logger.addHandler(stderr_handler)
+            #root_logger.setLevel(logging.DEBUG)
 
         try:
             _ = pkg_resources.get_distribution(module.__name__)

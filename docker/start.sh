@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
 # for Click library to work in satosa-saml-metadata
-export LC_ALL=C.UTF-8
-export LANG=C.UTF-8
-
+if [[ -z "$LC_ALL" ]]; then
+    export LC_ALL=C.UTF-8
+fi
+if [[ -z "$LANG" ]]; then
+    export LANG=C.UTF-8
+fi
 # exit immediately on failure
 set -e
 
@@ -32,7 +35,7 @@ if [ ! -d ${DATA_DIR}/attributemaps ]; then
 fi
 
 # Activate virtualenv
-. /opt/satosa/bin/activate
+. /opt/venv/bin/activate
 
 # generate metadata for front- (IdP) and back-end (SP) and write it to mounted volume
 

@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 
 STATE_KEY = "SATOSA_BASE"
 
-
+#from autologging import traced
+#@traced
 class SATOSABase(object):
     """
     Base class for a satosa proxy server.
@@ -227,7 +228,7 @@ class SATOSABase(object):
         :return: response
         """
         try:
-            return spec(context)
+            return spec(context, wsgi_app=self)
         except SATOSAAuthenticationError as error:
             error.error_id = uuid.uuid4().urn
             msg = "ERROR_ID [{err_id}]\nSTATE:\n{state}".format(err_id=error.error_id,

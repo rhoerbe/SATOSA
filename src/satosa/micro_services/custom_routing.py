@@ -1,4 +1,5 @@
 import logging
+import os
 from base64 import urlsafe_b64encode
 
 from satosa.context import Context
@@ -60,12 +61,15 @@ class DecideIfRequesterIsAllowed(RequestMicroService):
         return urlsafe_b64encode(data.encode("utf-8")).decode("utf-8")
 
     def process(self, context, data):
-        target_entity_id = context.get_decoration(Context.KEY_TARGET_ENTITYID)
-        if None is target_entity_id:
-            msg_tpl = "{name} can only be used when a target entityid is set"
+        # target_entity_id = context.get_decoration(Context.KEY_TARGET_ENTITYID)  # see issue #218
+        target_entity_id_env = os.environ.get('TARGET_ENTITYID', None)
+        if None is target_entity_id_env:
+            msg_tpl = "{name} can only be used when a target entityid is set via TARGET_ENTITYID in env"
             msg = msg_tpl.format(name=self.__class__.__name__)
             logger.error(msg)
             raise SATOSAError(msg)
+        else:
+            target_entity_id = self._b64_url(target_entity_id_env)
 
         target_specific_rules = self.rules.get(target_entity_id)
         # default to allowing everything if there are no specific rules
