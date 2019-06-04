@@ -226,7 +226,7 @@ def _load_microservices(plugin_paths, plugins, plugin_filter, internal_attribute
                                         name=plugin_config["name"], base_url=base_url)
                 loaded_plugin_modules.append(instance)
             else:
-                logger.error("Unable to load request micro service %s - configuration not found" % plugin_config.name)
+                logger.error("Unable to load request micro service %s - configuration not found" % plugin_config["name"])
 
     return loaded_plugin_modules
 
