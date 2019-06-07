@@ -12,6 +12,7 @@ from .context import Context
 from .exception import SATOSAErrorNoTraceback
 from .response import ServiceError, NotFound
 from .routing import SATOSANoBoundEndpointError
+from .succinct_log_filter import SuccinctLogFilter
 from saml2.s_utils import UnknownSystemEntity
 
 logger = logging.getLogger(__name__)
@@ -134,20 +135,23 @@ class WsgiApplication(SATOSABase):
 
 def make_app(satosa_config):
     try:
+        if "SUCCINCT_LOG_SATOSA"  in satosa_config:
+            logfilter = SATOSALogFilter(satosa_config["SUCCINCT_LOG_SATOSA"])
         if "LOGGING" in satosa_config:
             logging.config.dictConfig(satosa_config["LOGGING"])
+            logging.getLogger().addFilter(logfilter)
         elif "TRACING" in satosa_config:
             import autologging
             logging.basicConfig(level=autologging.TRACE, stream=sys.stdout,
                                 format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+            logging.getLogger().addFilter(logfilter)
         else:
-            logging.basicConfig(level=logging.DEBUG, stream=sys.stdout,
-                                format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
-            #stderr_handler = logging.StreamHandler(sys.stderr)
-            #stderr_handler.setLevel(logging.DEBUG)
-            #root_logger = logging.getLogger("")
-            #root_logger.addHandler(stderr_handler)
-            #root_logger.setLevel(logging.DEBUG)
+            stderr_handler = logging.StreamHandler(sys.stderr)
+            stderr_handler.setLevel(logging.DEBUG)
+            root_logger = logging.getLogger()
+            root_logger.addHandler(stderr_handler)
+            root_logger.setLevel(logging.DEBUG)
+            root_logger.addFilter(logfilter)
 
         try:
             _ = pkg_resources.get_distribution(module.__name__)

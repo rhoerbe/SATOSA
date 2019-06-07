@@ -74,24 +74,24 @@ class DecideIfRequesterIsAllowed(RequestMicroService):
         target_specific_rules = self.rules.get(target_entity_id)
         # default to allowing everything if there are no specific rules
         if not target_specific_rules:
-            logging.debug("Requester '%s' allowed by default to target entity '%s' due to no entity specific rules",
+            logger.debug("Requester '%s' allowed by default to target entity '%s' due to no entity specific rules",
                           data.requester, target_entity_id)
             return super().process(context, data)
 
         # deny rules takes precedence
         deny_rules = target_specific_rules.get("deny", [])
         if data.requester in deny_rules:
-            logging.debug("Requester '%s' is not allowed by target entity '%s' due to deny rules '%s'", data.requester,
+            logger.debug("Requester '%s' is not allowed by target entity '%s' due to deny rules '%s'", data.requester,
                           target_entity_id, deny_rules)
             raise SATOSAError("Requester is not allowed by target provider")
 
         allow_rules = target_specific_rules.get("allow", [])
         allow_all = "*" in allow_rules
         if data.requester in allow_rules or allow_all:
-            logging.debug("Requester '%s' allowed by target entity '%s' due to allow rules '%s",
+            logger.debug("Requester '%s' allowed by target entity '%s' due to allow rules '%s",
                           data.requester, target_entity_id, allow_rules)
             return super().process(context, data)
 
-        logging.debug("Requester '%s' is not allowed by target entity '%s' due to no deny all rule in '%s'",
+        logger.debug("Requester '%s' is not allowed by target entity '%s' due to no deny all rule in '%s'",
                       data.requester, target_entity_id, deny_rules)
         raise SATOSAError("Requester is not allowed by target provider")
