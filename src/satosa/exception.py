@@ -14,7 +14,6 @@ class SATOSAErrorNoTraceback(SATOSAError):
     """
     Base SATOSA exception
     """
-    def
 
 
 class SATOSAConfigurationError(SATOSAErrorNoTraceback):

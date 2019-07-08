@@ -12,10 +12,11 @@ from .context import Context
 from .exception import SATOSAErrorNoTraceback
 from .response import ServiceError, NotFound
 from .routing import SATOSANoBoundEndpointError
-from .succinct_log_filter import SuccinctLogFilter
+from .satosa_log_filter import add_satosa_log_filter, SATOSALogFilter
 from saml2.s_utils import UnknownSystemEntity
 
 logger = logging.getLogger(__name__)
+add_satosa_log_filter(logger)
 
 
 def unpack_get(environ):
@@ -43,7 +44,7 @@ def unpack_post(environ, content_length):
     elif "application/json" in environ["CONTENT_TYPE"]:
         data = json.loads(post_body)
 
-    logger.debug("unpack_post:: %s", data)
+    logger.debug("unpack_post: " + json.dumps(data))
     return data
 
 
@@ -59,7 +60,7 @@ def unpack_request(environ, content_length=0):
     elif environ["REQUEST_METHOD"] == "POST":
         data = unpack_post(environ, content_length)
 
-    logger.debug("read request data: %s", data)
+    logger.debug("read request data: " + json.dumps(data))
     return data
 
 
@@ -122,13 +123,12 @@ class WsgiApplication(SATOSABase):
                 "you requested could not be found.")
             return resp(environ, start_response)
         except UnknownSystemEntity:
-            pass
+            if debug:
+                raise
         except SATOSAErrorNoTraceback as err:
             logger.error(str(err))
         except Exception as err:
             logger.exception("%s" % err)
-            if debug:
-                raise
             resp = ServiceError("%s" % err)
             return resp(environ, start_response)
 

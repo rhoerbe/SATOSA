@@ -53,8 +53,6 @@ class LocalStore():
         return pickle.loads(context_serlzd)
 
 
-from autologging import traced
-@traced()
 class RedirectUrlRequest(RequestMicroService):
     """ Store AuthnRequest in SATOSA STATE in case it is required later for the RedirectUrl flow """
     def __init__(self, config: dict, *args, **kwargs):
