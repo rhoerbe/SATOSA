@@ -16,3 +16,4 @@ example/*
 build/
 dist/
 .coverage
+work/
