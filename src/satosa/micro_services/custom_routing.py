@@ -5,6 +5,7 @@ from base64 import urlsafe_b64encode
 from satosa.context import Context
 
 from .base import RequestMicroService
+from ..exception import SATOSAErrorNoTraceback
 from ..exception import SATOSAConfigurationError
 from ..exception import SATOSAError
 
@@ -67,7 +68,7 @@ class DecideIfRequesterIsAllowed(RequestMicroService):
             msg_tpl = "{name} can only be used when a target entityid is set via TARGET_ENTITYID in env"
             msg = msg_tpl.format(name=self.__class__.__name__)
             logger.error(msg)
-            raise SATOSAError(msg)
+            raise SATOSAErrorNoTraceback(msg)
         else:
             target_entity_id = self._b64_url(target_entity_id_env)
 
@@ -83,7 +84,7 @@ class DecideIfRequesterIsAllowed(RequestMicroService):
         if data.requester in deny_rules:
             logger.debug("Requester '%s' is not allowed by target entity '%s' due to deny rules '%s'", data.requester,
                           target_entity_id, deny_rules)
-            raise SATOSAError("Requester is not allowed by target provider")
+            raise SATOSAErrorNoTraceback("Requester is not allowed by target provider")
 
         allow_rules = target_specific_rules.get("allow", [])
         allow_all = "*" in allow_rules
@@ -94,4 +95,4 @@ class DecideIfRequesterIsAllowed(RequestMicroService):
 
         logger.debug("Requester '%s' is not allowed by target entity '%s' due to no deny all rule in '%s'",
                       data.requester, target_entity_id, deny_rules)
-        raise SATOSAError("Requester is not allowed by target provider")
+        raise SATOSAErrorNoTraceback("Requester is not allowed by target provider")
