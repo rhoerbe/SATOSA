@@ -2,6 +2,7 @@ import io
 import json
 import logging
 import logging.config
+import os
 import sys
 from urllib.parse import parse_qsl
 
@@ -10,14 +11,14 @@ import pkg_resources
 from .base import SATOSABase
 from .context import Context
 from .exception import SATOSAErrorNoTraceback
-from .response import ServiceError, NotFound
+from .response import BadRequest, ServiceError, NotFound
 from .routing import SATOSANoBoundEndpointError
 from .satosa_log_filter import add_satosa_log_filter, SATOSALogFilter
+from saml2.response import IncorrectlySigned
 from saml2.s_utils import UnknownSystemEntity
 
 logger = logging.getLogger(__name__)
 add_satosa_log_filter(logger)
-
 
 def unpack_get(environ):
     """
@@ -116,21 +117,28 @@ class WsgiApplication(SATOSABase):
             resp = self.run(context)
             if isinstance(resp, Exception):
                 raise resp
-            return resp(environ, start_response)
         except SATOSANoBoundEndpointError:
             resp = NotFound(
-                "The Service or Identity Provider"
-                "you requested could not be found.")
-            return resp(environ, start_response)
-        except UnknownSystemEntity:
-            if debug:
-                raise
-        except SATOSAErrorNoTraceback as err:
-            logger.error(str(err))
-        except Exception as err:
-            logger.exception("%s" % err)
-            resp = ServiceError("%s" % err)
-            return resp(environ, start_response)
+                "The Service or Identity Provider you requested could not be found.")
+        except IncorrectlySigned:
+            logger.error('Unkown system entity or invalid message signature')
+            resp = BadRequest(message='Unkown system entity or invalid message signature')
+        except SATOSAErrorNoTraceback as e:
+            logger.error("%s" % e)
+            if os.getenv("OBFUSCATE_INTERACTIVE_ERRMSG", None):
+                msg = 'Proxy error (configuration, request, etc - confer to log file)'
+            else:
+                msg = '{} ({})'.format(e, type(e).__name__)
+            resp = ServiceError(message=msg)
+        except (UnknownSystemEntity, Exception) as e:
+            logger.exception("%s" % e)
+            if os.getenv("OBFUSCATE_INTERACTIVE_ERRMSG", None):
+                msg = 'Proxy error (configuration, request, etc - confer to log file)'
+            else:
+                msg = '{} ({})'.format(e, type(e).__name__)
+            resp = ServiceError(message=msg)
+
+        return resp(environ, start_response)
 
 
 def make_app(satosa_config):

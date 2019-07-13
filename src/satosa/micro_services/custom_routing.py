@@ -63,36 +63,36 @@ class DecideIfRequesterIsAllowed(RequestMicroService):
 
     def process(self, context, data):
         # target_entity_id = context.get_decoration(Context.KEY_TARGET_ENTITYID)  # see issue #218
-        target_entity_id_env = os.environ.get('TARGET_ENTITYID', None)
-        if None is target_entity_id_env:
+        target_entityid = os.environ.get('TARGET_ENTITYID', None)
+        if None is target_entityid:
             msg_tpl = "{name} can only be used when a target entityid is set via TARGET_ENTITYID in env"
             msg = msg_tpl.format(name=self.__class__.__name__)
             logger.error(msg)
             raise SATOSAErrorNoTraceback(msg)
         else:
-            target_entity_id = self._b64_url(target_entity_id_env)
+            target_entityid_b64 = self._b64_url(target_entityid)
 
-        target_specific_rules = self.rules.get(target_entity_id)
+        target_specific_rules = self.rules.get(target_entityid_b64)
         # default to allowing everything if there are no specific rules
         if not target_specific_rules:
             logger.debug("Requester '%s' allowed by default to target entity '%s' due to no entity specific rules",
-                          data.requester, target_entity_id)
+                          data.requester, target_entityid)
             return super().process(context, data)
 
         # deny rules takes precedence
         deny_rules = target_specific_rules.get("deny", [])
         if data.requester in deny_rules:
             logger.debug("Requester '%s' is not allowed by target entity '%s' due to deny rules '%s'", data.requester,
-                          target_entity_id, deny_rules)
+                          target_entityid, deny_rules)
             raise SATOSAErrorNoTraceback("Requester is not allowed by target provider")
 
         allow_rules = target_specific_rules.get("allow", [])
         allow_all = "*" in allow_rules
         if data.requester in allow_rules or allow_all:
             logger.debug("Requester '%s' allowed by target entity '%s' due to allow rules '%s",
-                          data.requester, target_entity_id, allow_rules)
+                          data.requester, target_entityid, allow_rules)
             return super().process(context, data)
 
         logger.debug("Requester '%s' is not allowed by target entity '%s' due to no deny all rule in '%s'",
-                      data.requester, target_entity_id, deny_rules)
+                      data.requester, target_entityid, deny_rules)
         raise SATOSAErrorNoTraceback("Requester is not allowed by target provider")
