@@ -237,14 +237,15 @@ class SAMLBackend(BackendModule, SAMLBaseModule):
                 raise SATOSAAuthenticationError(context.state, errmsg)
             del self.outstanding_queries[req_id]
 
-        # check if the relay_state matches the cookie state
-        if context.state[self.name]["relay_state"] != context.request["RelayState"]:
-            logger.debug("State did not match relay state for state", extra={'state': context.state})
-            raise SATOSAAuthenticationError(context.state, "State did not match relay state")
+        # if the response relay_state exists it must match that from the request
+        if self.name in context.state and "relay_state" in context.state[self.name]:
+            if context.state[self.name]["relay_state"] != context.request["RelayState"]:
+                logger.debug("State did not match relay state for state", extra={'state': context.state})
+                raise SATOSAAuthenticationError(context.state, "State did not match relay state")
+            del context.state[self.name]
 
         context.decorate(Context.KEY_BACKEND_METADATA_STORE, self.sp.metadata)
 
-        del context.state[self.name]
         return self.auth_callback_func(context, self._translate_response(authn_response, context.state))
 
     def disco_response(self, context, **kwargs):
