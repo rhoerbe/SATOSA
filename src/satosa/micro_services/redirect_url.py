@@ -36,8 +36,8 @@ class LocalStore():
         Create a new key when a new value is set.
         Delete key/value after reading it
     """
-    def __init__(self, encryption_key: str):
-        self.redis = redis.Redis(host='localhost', port=6379)
+    def __init__(self, encryption_key: str, redishost: str):
+        self.redis = redis.Redis(host=redishost, port=6379)
         self.aes_cipher = _AESCipher(encryption_key)
 
     def set(self, context: object) -> int:
@@ -57,7 +57,7 @@ class RedirectUrlRequest(RequestMicroService):
     """ Store AuthnRequest in SATOSA STATE in case it is required later for the RedirectUrl flow """
     def __init__(self, config: dict, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.local_store = LocalStore(config['db_encryption_key'])
+        self.local_store = LocalStore(config['db_encryption_key'], redishost=config.get('redis_host', 'localhost'))
         logging.info('RedirectUrlRequest microservice active')
 
     def process(self, context: satosa.context.Context, internal_request: satosa.internal.InternalData) \
@@ -83,7 +83,7 @@ class RedirectUrlResponse(ResponseMicroService):
         self.endpoint = 'redirecturl_response'
         self.redir_attr = config['redirect_attr_name']
         self.redir_entityid = config['redir_entityid']
-        self.local_store = LocalStore(config['db_encryption_key'])
+        self.local_store = LocalStore(config['db_encryption_key'], redishost=config.get('redis_host', 'localhost'))
         logging.info('RedirectUrlResponse microservice active')
 
     def _handle_redirecturl_response(
@@ -108,5 +108,4 @@ class RedirectUrlResponse(ResponseMicroService):
 
     def register_endpoints(self):
         return [("^{}$".format(self.endpoint), self._handle_redirecturl_response), ]
-
 
