@@ -60,8 +60,7 @@ class RedirectUrlRequest(RequestMicroService):
         self.local_store = LocalStore(config['db_encryption_key'])
         logging.info('RedirectUrlRequest microservice active')
 
-    def process(
-            self, context: satosa.context.Context, internal_request: satosa.internal.InternalData) \
+    def process(self, context: satosa.context.Context, internal_request: satosa.internal.InternalData) \
             -> Tuple[satosa.context.Context, satosa.internal.InternalData]:
         key = self.local_store.set(context)
         context.state[STATE_KEY] = str(key)
@@ -69,7 +68,6 @@ class RedirectUrlRequest(RequestMicroService):
         return super().process(context, internal_request)
 
 
-@traced()
 class RedirectUrlResponse(ResponseMicroService):
     """
     Handle following events:
@@ -106,7 +104,7 @@ class RedirectUrlResponse(ResponseMicroService):
             return satosa.response.Redirect(redirecturl)
         else:
             logging.debug(f"RedirectUrl microservice: Attribute {self.redir_attr} not found")
-        return super().process(context, context)
+        return super().process(context, internal_response)
 
     def register_endpoints(self):
         return [("^{}$".format(self.endpoint), self._handle_redirecturl_response), ]
