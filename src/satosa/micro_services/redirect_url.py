@@ -81,6 +81,7 @@ class RedirectUrlResponse(ResponseMicroService):
     def __init__(self, config: dict, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.endpoint = 'redirecturl_response'
+        self.self_entityid = config['self_entityid']
         self.redir_attr = config['redirect_attr_name']
         self.redir_entityid = config['redir_entityid']
         self.local_store = LocalStore(config['db_encryption_key'], redishost=config.get('redis_host', 'localhost'))
@@ -100,7 +101,7 @@ class RedirectUrlResponse(ResponseMicroService):
                 internal_response: satosa.internal.InternalData) -> satosa.response.Response:
         if self.redir_attr in internal_response.attributes:
             logging.debug(f"RedirectUrl microservice: Attribute {self.redir_attr} found, starting redirect")
-            redirecturl = internal_response.attributes[self.redir_attr][0] + '?wtrealm=' + 'https%3A%2F%2Fproxy2.test.wpv.portalverbund.at%2Fsp%2Fproxy_backend.xml'
+            redirecturl = internal_response.attributes[self.redir_attr][0] + '?wtrealm=' + self.self_entityid
             return satosa.response.Redirect(redirecturl)
         else:
             logging.debug(f"RedirectUrl microservice: Attribute {self.redir_attr} not found")
