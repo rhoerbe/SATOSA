@@ -110,3 +110,6 @@ class RedirectUrlResponse(ResponseMicroService):
     def register_endpoints(self):
         return [("^{}$".format(self.endpoint), self._handle_redirecturl_response), ]
 
+
+if sys.version_info < (3, 6):
+    raise Exception("Must be using Python 3.6 or later")
