@@ -18,7 +18,6 @@ from satosa.micro_services.base import ResponseMicroService
 from satosa.response import Redirect
 
 logger = logging.getLogger(__name__)
-
 STATE_KEY = "CONSENT"
 
 

@@ -49,8 +49,8 @@ class SimpleConsent(ResponseMicroService):
         self.endpoint = "/simple_consent"
         logging.info('SimpleConsent microservice active')
 
-    def _clear_consent(self, context: satosa.context.Context,
-                       internal_response: satosa.internal.InternalData) -> satosa.response.Response:
+    def _end_consent_flow(self, context: satosa.context.Context,
+                          internal_response: satosa.internal.InternalData) -> satosa.response.Response:
         del context.state[CONSENT_STATE]
         return super().process(context, internal_response)
 
@@ -66,33 +66,28 @@ class SimpleConsent(ResponseMicroService):
         consent_id = context.state[CONSENT_STATE]
 
         try:
-            consent_attributes = self._verify_consent(consent_id)
+            consent_given = self._verify_consent(consent_id)
         except ConnectionError:
             satosa_logging(logger, logging.ERROR,
                            "Consent service is not reachable, no consent given.", context.state)
-            # Send an internal_response without any attributes
-            consent_attributes = None
+            internal_response.attributes = {} 
 
-        if consent_attributes is None:
-            satosa_logging(logger, logging.INFO, "Consent was NOT given", context.state)
-            # If consent was not given, then don't send any attributes
-            consent_attributes = []
+        if consent_given:
+            satosa_logging(logger, logging.INFO, "Consent was NOT given, removing attributes", context.state)
+            internal_response.attributes = {}
         else:
             satosa_logging(logger, logging.INFO, "Consent was given", context.state)
 
-        return self._clear_consent(context, internal_response)
+        return self._end_consent_flow(context, internal_response)
 
-    def _filter_attributes(self, attributes, filter):
-        return {k: v for k, v in attributes.items() if k in filter}
-
-    def _get_consent_id(self, user_id: str, filtered_attr: dict[str, str]) -> str:
+    def _get_consent_id(self, user_id: str, attr_set: dict) -> str:
         # include attributes in id_hash to ensure that consent is invalid if the attribute set changes
-        filtered_attr_key_list = sorted(filtered_attr.keys())
-        consent_id_json = json.dumps([user_id, filtered_attr_key_list])
+        attr_key_list = sorted(attr_set.keys())
+        consent_id_json = json.dumps([user_id, attr_key_list])
         if self.id_hash_alg == 'md5':
-            consent_id_hash = hashlib.md5(consent_id_json)
+            consent_id_hash = hashlib.md5(consent_id_json.encode('utf-8'))
         elif self.id_hash_alg == 'sha224':
-            consent_id_hash = hashlib.sha224(consent_id_json)
+            consent_id_hash = hashlib.sha224(consent_id_json.encode('utf-8'))
         else:
             raise Exception("Simpleconsent.config.id_hash_alg must be in ('md5', 'sha224')")
         return consent_id_hash.hexdigest()
@@ -101,33 +96,31 @@ class SimpleConsent(ResponseMicroService):
                 internal_resp: satosa.internal.InternalData) -> satosa.response.Response:
 
         response_state = context.state[RESPONSE_STATE]
-        internal_resp.attributes = self._filter_attributes(internal_resp.attributes, response_state["filter"])
         consent_id = self._get_consent_id(internal_resp.subject_id, internal_resp.attributes)
         context.state[CONSENT_STATE] = consent_id
         logging.debug(f"SimpleConsent microservice: verify consent, id={consent_id}")
         try:
             # Check if consent is already given
-            consent_attributes = self._verify_consent(internal_resp.requester, consent_id)
+            consent_given = self._verify_consent(internal_resp.requester, consent_id)
         except requests.exceptions.ConnectionError:
             satosa_logging(logger, logging.ERROR,
                            "Consent service is not reachable, no consent given.", context.state)
             # Send an internal_resp without any attributes
             internal_resp.attributes = {}
-            return self._clear_consent(context, internal_resp)
+            return self._end_consent_flow(context, internal_resp)
 
-        if consent_attributes is None:
+        if consent_given:
+            satosa_logging(logger, logging.DEBUG, "SimpleConsent microservice: previous consent found", context.state)
+            return self._end_consent_flow(context, internal_resp)   # return attribute set unmodified
+        else:
             logging.debug(f"SimpleConsent microservice: starting redirect to request consent")
             consent_requ = json.dumps(self._make_consent_request(response_state, consent_id, internal_resp.attributes))
             redirecturl = f"{self.request_consent_url}/{urllib.parse.quote_plus(consent_requ)}"
             return satosa.response.Redirect(redirecturl)
-        else:        
-            satosa_logging(logger, logging.DEBUG, "SimpleConsent microservice: previous consent found", context.state)
-            internal_resp.attributes = self._filter_attributes(internal_resp.attributes, consent_attributes)
-            return self._clear_consent(context, internal_resp)
 
         return super().process(context, internal_resp)
 
-    def _make_consent_request(self, response_state: dict, consent_id: str, attr: list[str]) -> dict:
+    def _make_consent_request(self, response_state: dict, consent_id: str, attr: list) -> dict:
         return {
             "entityid": "https://idp1.example.org/idp",
             "consentid": consent_id,
@@ -135,11 +128,11 @@ class SimpleConsent(ResponseMicroService):
             "attr_list": attr,
         }
 
-    def register_endpoints(self) -> list[str]:
-        return [("^{}$".format(self.endpoint), self._handle_redirecturl_response), ]
+    def register_endpoints(self) -> list:
+        return [("^{}$".format(self.endpoint), self._handle_consent_response), ]
 
     def _verify_consent(self, requester, consent_id: str) -> bool:
-        url = f"self.verify_consent_url/{requester.decode('ascii')}/{consent_id}/"
+        url = f"{self.verify_consent_url}/{requester}/{consent_id}/"
         response = requests.request(method='GET', url=url)
         return (response.status_code == 200)
 
