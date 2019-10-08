@@ -11,6 +11,7 @@ Logic:
   7. continue with response
 
 """
+import base64
 import hashlib
 import json
 import logging
@@ -70,7 +71,7 @@ class SimpleConsent(ResponseMicroService):
         except ConnectionError:
             satosa_logging(logger, logging.ERROR,
                            "Consent service is not reachable, no consent given.", context.state)
-            internal_response.attributes = {} 
+            internal_response.attributes = {}
 
         if consent_given:
             satosa_logging(logger, logging.INFO, "Consent was NOT given, removing attributes", context.state)
@@ -104,7 +105,8 @@ class SimpleConsent(ResponseMicroService):
             consent_given = self._verify_consent(internal_resp.requester, consent_id)
         except requests.exceptions.ConnectionError:
             satosa_logging(logger, logging.ERROR,
-                           "Consent service is not reachable, no consent given.", context.state)
+                           f"Consent service is not reachable at {self.verify_consent_url}, no consent given.",
+                           context.state)
             # Send an internal_resp without any attributes
             internal_resp.attributes = {}
             return self._end_consent_flow(context, internal_resp)
@@ -122,7 +124,7 @@ class SimpleConsent(ResponseMicroService):
 
     def _make_consent_request(self, response_state: dict, consent_id: str, attr: list) -> dict:
         return {
-            "entityid": "https://idp1.example.org/idp",
+            "entityid": "self.self_entityid",
             "consentid": consent_id,
             "sp": response_state['Saml2IDP']['resp_args']['sp_entity_id'],
             "attr_list": attr,
@@ -132,9 +134,15 @@ class SimpleConsent(ResponseMicroService):
         return [("^{}$".format(self.endpoint), self._handle_consent_response), ]
 
     def _verify_consent(self, requester, consent_id: str) -> bool:
-        url = f"{self.verify_consent_url}/{requester}/{consent_id}/"
-        response = requests.request(method='GET', url=url)
-        return (response.status_code == 200)
+        requester_b64 = base64.urlsafe_b64encode(requester.encode('ascii')).decode('ascii')
+        url = f"{self.verify_consent_url}/{requester_b64}/{consent_id}/"
+        try:
+            response = requests.request(method='GET', url=url)
+            return (response.status_code == 200)
+        except requests.exceptions.ConnectionError:
+            logger.debug(f"GET {url} {response.status_code}")
+            raise
+
 
 
 if sys.version_info < (3, 6):
