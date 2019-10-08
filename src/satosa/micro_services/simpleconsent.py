@@ -123,12 +123,15 @@ class SimpleConsent(ResponseMicroService):
         return super().process(context, internal_resp)
 
     def _make_consent_request(self, response_state: dict, consent_id: str, attr: list) -> dict:
-        return {
+        # attr-list removed for the time being, as the target project operates with a static attr  set
+        consent_requ_dict = {
             "entityid": "self.self_entityid",
             "consentid": consent_id,
-            "sp": response_state['Saml2IDP']['resp_args']['sp_entity_id'],
-            "attr_list": attr,
+            "sp": response_state['resp_args']['sp_entity_id'],
         }
+        consent_requ_json = json.dumps(consent_requ_dict)
+        consent_requ_b64 = base64.urlsafe_b64encode(consent_requ_json.encode('ascii')).decode('ascii')
+        return consent_requ_b64
 
     def register_endpoints(self) -> list:
         return [("^{}$".format(self.endpoint), self._handle_consent_response), ]
