@@ -138,11 +138,13 @@ class SimpleConsent(ResponseMicroService):
         url = f"{self.verify_consent_url}/{requester_b64}/{consent_id}/"
         try:
             response = requests.request(method='GET', url=url)
-            return (response.status_code == 200)
-        except requests.exceptions.ConnectionError:
-            logger.debug(f"GET {url} {response.status_code}")
+            if response.status_code == 200:
+                return json.loads(response.text)
+            else:
+                raise ConnectionError(f"GET {url} returned status code {response.status_code}")
+        except requests.exceptions.ConnectionError as e:
+            logger.debug(f"GET {url} {str(e)}")
             raise
-
 
 
 if sys.version_info < (3, 6):
