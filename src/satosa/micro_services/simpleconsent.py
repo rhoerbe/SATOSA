@@ -40,14 +40,16 @@ class UnexpectedResponseError(Exception):
 class SimpleConsent(ResponseMicroService):
     def __init__(self, config: dict, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = "simpleconsent"
-        self.endpoint = 'redirecturl_response'
+        self.consent_attrname_display = config['consent_attrname_display']
+        self.consent_attr_not_displayed = config['consent_attr_not_displayed']
         self.consent_cookie_name = config['consent_cookie_name']
-        self.self_entityid = config['self_entityid']
-        self.verify_consent_url = config['verify_consent_url']
-        self.id_hash_alg = config['id_hash_alg']
-        self.request_consent_url = config['request_consent_url']
         self.endpoint = "/simple_consent"
+        self.id_hash_alg = config['id_hash_alg']
+        self.name = "simpleconsent"
+        self.request_consent_url = config['request_consent_url']
+        self.self_entityid = config['self_entityid']
+        self.sp_entityid_names: dict = config['sp_entityid_names']
+        self.verify_consent_url = config['verify_consent_url']
         logging.info('SimpleConsent microservice active')
 
     def _end_consent_flow(self, context: satosa.context.Context,
@@ -123,11 +125,19 @@ class SimpleConsent(ResponseMicroService):
         return super().process(context, internal_resp)
 
     def _make_consent_request(self, response_state: dict, consent_id: str, attr: list) -> dict:
-        # attr-list removed for the time being, as the target project operates with a static attr  set
+        display_attr: set = set.difference(set(attr), set(self.consent_attr_not_displayed))
+        for attr_name, attr_name_translated in self.consent_attrname_display.items():
+            if attr_name in display_attr:
+                display_attr.discard(attr_name)
+                display_attr.add(attr_name_translated)
+        entityid = response_state['resp_args']['sp_entity_id']
+        sp_name = self.sp_entityid_names.get(entityid, entityid)
+
         consent_requ_dict = {
-            "entityid": "self.self_entityid",
+            "entityid": entityid,
             "consentid": consent_id,
-            "sp": response_state['resp_args']['sp_entity_id'],
+            "sp": sp_name,
+            "attr_list": sorted(list(display_attr)),
         }
         consent_requ_json = json.dumps(consent_requ_dict)
         consent_requ_b64 = base64.urlsafe_b64encode(consent_requ_json.encode('ascii')).decode('ascii')
