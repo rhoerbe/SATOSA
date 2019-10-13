@@ -13,6 +13,7 @@ Logic:
 """
 import base64
 import hashlib
+import hmac
 import json
 import logging
 import sys
@@ -43,9 +44,11 @@ class SimpleConsent(ResponseMicroService):
         self.consent_attrname_display = config['consent_attrname_display']
         self.consent_attr_not_displayed = config['consent_attr_not_displayed']
         self.consent_cookie_name = config['consent_cookie_name']
+        self.consent_service_api_auth = config['consent_service_api_auth']
         self.endpoint = "/simple_consent"
         self.id_hash_alg = config['id_hash_alg']
         self.name = "simpleconsent"
+        self.proxy_hmac_key = config['PROXY_HMAC_KEY'].encode('ascii')
         self.request_consent_url = config['request_consent_url']
         self.self_entityid = config['self_entityid']
         self.sp_entityid_names: dict = config['sp_entityid_names']
@@ -118,8 +121,10 @@ class SimpleConsent(ResponseMicroService):
             return self._end_consent_flow(context, internal_resp)   # return attribute set unmodified
         else:
             logging.debug(f"SimpleConsent microservice: starting redirect to request consent")
-            consent_requ = json.dumps(self._make_consent_request(response_state, consent_id, internal_resp.attributes))
-            redirecturl = f"{self.request_consent_url}/{urllib.parse.quote_plus(consent_requ)}"
+            consent_requ_json = self._make_consent_request(response_state, consent_id, internal_resp.attributes)
+            hmac_str = hmac.new(self.proxy_hmac_key, consent_requ_json.encode('utf-8'), hashlib.sha256).hexdigest()
+            consent_requ_b64 = base64.urlsafe_b64encode(consent_requ_json.encode('ascii')).decode('ascii')
+            redirecturl = f"{self.request_consent_url}/{urllib.parse.quote_plus(consent_requ_b64)}/{hmac_str}/"
             return satosa.response.Redirect(redirecturl)
 
         return super().process(context, internal_resp)
@@ -137,11 +142,11 @@ class SimpleConsent(ResponseMicroService):
             "entityid": entityid,
             "consentid": consent_id,
             "sp": sp_name,
+            "uid": 'uid',
             "attr_list": sorted(list(display_attr)),
         }
         consent_requ_json = json.dumps(consent_requ_dict)
-        consent_requ_b64 = base64.urlsafe_b64encode(consent_requ_json.encode('ascii')).decode('ascii')
-        return consent_requ_b64
+        return consent_requ_json
 
     def register_endpoints(self) -> list:
         return [("^{}$".format(self.endpoint), self._handle_consent_response), ]
@@ -150,7 +155,9 @@ class SimpleConsent(ResponseMicroService):
         requester_b64 = base64.urlsafe_b64encode(requester.encode('ascii')).decode('ascii')
         url = f"{self.verify_consent_url}/{requester_b64}/{consent_id}/"
         try:
-            response = requests.request(method='GET', url=url)
+            api_cred = (self.consent_service_api_auth['userid'],
+                        self.consent_service_api_auth['password'])
+            response = requests.request(method='GET', url=url, auth=(api_cred))
             if response.status_code == 200:
                 return json.loads(response.text)
             else:
