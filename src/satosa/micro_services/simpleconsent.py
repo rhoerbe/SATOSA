@@ -16,6 +16,7 @@ import hashlib
 import hmac
 import json
 import logging
+import pickle
 import sys
 import urllib.parse
 
@@ -31,7 +32,8 @@ from satosa.response import Redirect
 logger = logging.getLogger(__name__)
 
 RESPONSE_STATE = "Saml2IDP"
-CONSENT_STATE = "SimpleConsent"
+CONSENT_ID = "SimpleConsent"
+CONSENT_INT_DATA = 'simpleconsent.internaldata'
 
 
 class UnexpectedResponseError(Exception):
@@ -45,7 +47,7 @@ class SimpleConsent(ResponseMicroService):
         self.consent_attr_not_displayed = config['consent_attr_not_displayed']
         self.consent_cookie_name = config['consent_cookie_name']
         self.consent_service_api_auth = config['consent_service_api_auth']
-        self.endpoint = "/simple_consent"
+        self.endpoint = "simpleconsent_response"
         self.id_hash_alg = config['id_hash_alg']
         self.name = "simpleconsent"
         self.proxy_hmac_key = config['PROXY_HMAC_KEY'].encode('ascii')
@@ -57,7 +59,7 @@ class SimpleConsent(ResponseMicroService):
 
     def _end_consent_flow(self, context: satosa.context.Context,
                           internal_response: satosa.internal.InternalData) -> satosa.response.Response:
-        del context.state[CONSENT_STATE]
+        del context.state[CONSENT_ID]
         return super().process(context, internal_response)
 
     def _handle_consent_response(
@@ -66,23 +68,22 @@ class SimpleConsent(ResponseMicroService):
             wsgi_app: callable(satosa.context.Context)) -> satosa.response.Response:
 
         logging.debug(f"SimpleConsent microservice: resuming response processing after requesting consent")
-        response_state = context.state[RESPONSE_STATE]
-        saved_resp = response_state["internal_resp"]
-        internal_response = InternalData.from_dict(saved_resp)
-        consent_id = context.state[CONSENT_STATE]
+        internal_resp_ser = base64.b64decode(context.state[CONSENT_INT_DATA].encode('ascii'))
+        internal_response = pickle.loads(internal_resp_ser)
+        consent_id = context.state[CONSENT_ID]
 
         try:
-            consent_given = self._verify_consent(consent_id)
+            consent_given = self._verify_consent(internal_response.requester, consent_id)
         except ConnectionError:
             satosa_logging(logger, logging.ERROR,
                            "Consent service is not reachable, no consent given.", context.state)
             internal_response.attributes = {}
 
         if consent_given:
+            satosa_logging(logger, logging.INFO, "Consent was given", context.state)
+        else:
             satosa_logging(logger, logging.INFO, "Consent was NOT given, removing attributes", context.state)
             internal_response.attributes = {}
-        else:
-            satosa_logging(logger, logging.INFO, "Consent was given", context.state)
 
         return self._end_consent_flow(context, internal_response)
 
@@ -103,7 +104,7 @@ class SimpleConsent(ResponseMicroService):
 
         response_state = context.state[RESPONSE_STATE]
         consent_id = self._get_consent_id(internal_resp.subject_id, internal_resp.attributes)
-        context.state[CONSENT_STATE] = consent_id
+        context.state[CONSENT_ID] = consent_id
         logging.debug(f"SimpleConsent microservice: verify consent, id={consent_id}")
         try:
             # Check if consent is already given
@@ -121,6 +122,10 @@ class SimpleConsent(ResponseMicroService):
             return self._end_consent_flow(context, internal_resp)   # return attribute set unmodified
         else:
             logging.debug(f"SimpleConsent microservice: starting redirect to request consent")
+            # save internal response
+            internal_resp_ser = pickle.dumps(internal_resp)
+            context.state[CONSENT_INT_DATA] = base64.b64encode(internal_resp_ser).decode('ascii')
+            # create request object & redirect
             consent_requ_json = self._make_consent_request(response_state, consent_id, internal_resp.attributes)
             hmac_str = hmac.new(self.proxy_hmac_key, consent_requ_json.encode('utf-8'), hashlib.sha256).hexdigest()
             consent_requ_b64 = base64.urlsafe_b64encode(consent_requ_json.encode('ascii')).decode('ascii')
@@ -135,14 +140,17 @@ class SimpleConsent(ResponseMicroService):
             if attr_name in display_attr:
                 display_attr.discard(attr_name)
                 display_attr.add(attr_name_translated)
+        displayname = attr['displayname'][0] if attr['displayname'] else ''
         entityid = response_state['resp_args']['sp_entity_id']
         sp_name = self.sp_entityid_names.get(entityid, entityid)
+        uid = attr['mail'][0] if attr['mail'] else ''
 
         consent_requ_dict = {
             "entityid": entityid,
             "consentid": consent_id,
+            "displayname": displayname,
+            "mail": uid,
             "sp": sp_name,
-            "uid": 'uid',
             "attr_list": sorted(list(display_attr)),
         }
         consent_requ_json = json.dumps(consent_requ_dict)
