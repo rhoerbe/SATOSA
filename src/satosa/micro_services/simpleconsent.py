@@ -10,6 +10,8 @@ Logic:
   6. delete attributes if no consent
   7. continue with response
 
+The consent_id is derived from the subject_id; therefore in the SAMl backend case it requires to be a persistent nameid
+
 """
 import base64
 import hashlib
@@ -91,6 +93,7 @@ class SimpleConsent(ResponseMicroService):
         # include attributes in id_hash to ensure that consent is invalid if the attribute set changes
         attr_key_list = sorted(attr_set.keys())
         consent_id_json = json.dumps([user_id, attr_key_list])
+        logger.debug("consent_id_json: " + consent_id_json)
         if self.id_hash_alg == 'md5':
             consent_id_hash = hashlib.md5(consent_id_json.encode('utf-8'))
         elif self.id_hash_alg == 'sha224':
